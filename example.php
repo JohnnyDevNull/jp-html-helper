@@ -31,8 +31,7 @@
 		$htmlHelper = new jpfwHtmlHelper();
 		$formHelper = new jpfwHtmlHelperForm();
 
-		if(isset($_SESSION['form_token']))
-		{
+		if(isset($_SESSION['form_token'])) {
 			$formHelper->setLastFormToken($_SESSION['form_token']);
 		}
 
