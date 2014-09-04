@@ -4,9 +4,8 @@
  *
  * @package jpFramework
  * @author Philipp John <info@jplace.de>
- * @copyright (c) 2014, Philipp John
  * @version 0.1
- * @license http://www.gnu.org/licenses/gpl-3.0 GNUv3
+ * @license MIT - http://opensource.org/licenses/MIT
  */
 
 if (!defined('_JPEXEC')) {

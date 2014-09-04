@@ -1,7 +1,7 @@
 <?php session_start(); ?>
 <html>
 	<head>
-        	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
 		<link rel="stylesheet" type="text/css" href="./assets/css/bootstrap.min.css" />
 		<link rel="stylesheet" type="text/css" href="./assets/css/bootstrap-theme.min.css" />
@@ -17,9 +17,8 @@
 		 *
 		 * @package jpFramework
 		 * @author Philipp John <info@jplace.de>
-		 * @copyright (c) 2014, Philipp John
 		 * @version 0.1
-		 * @license http://www.gnu.org/licenses/gpl-3.0 GNUv3
+		 * @license MIT - http://opensource.org/licenses/MIT
 		 */
 
 		define('_JPEXEC', 1);

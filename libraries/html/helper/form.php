@@ -4,12 +4,11 @@
  *
  * @package jpFramework
  * @author Philipp John <info@jplace.de>
- * @copyright (c) 2014, Philipp John
  * @version 0.1
+ * @license MIT - http://opensource.org/licenses/MIT
  */
 
-if (!defined('_JPEXEC'))
-{
+if (!defined('_JPEXEC')) {
 	die('RESTRICTED ACCESS');
 }
 
@@ -136,13 +135,11 @@ class jpfwHtmlHelperForm extends jpfwHtmlHelperBase
 			<?php if($this->_formType == 'form-horizontal') : ?>
 			<div class="col-sm-<?php echo $colRight ?>">
 			<?php endif ?>
-
-				<input type="<?php echo $inputType; ?>"
-					   class="form-control"
-					   <?php echo 'name="'.$inputName.'"'; ?>
-					   <?php echo !empty($inputID) ? 'id="'.$inputID.'"' : ''; ?>
-					   <?php echo !empty($placeholder) ? 'placeholder="'.$placeholder.'"' : ''; ?> />
-
+			<input type="<?php echo $inputType; ?>"
+				   class="form-control"
+				   <?php echo 'name="'.$inputName.'"'; ?>
+				   <?php echo !empty($inputID) ? 'id="'.$inputID.'"' : ''; ?>
+				   <?php echo !empty($placeholder) ? 'placeholder="'.$placeholder.'"' : ''; ?> />
 			<?php if($this->_formType == 'form-horizontal') : ?>
 			</div>
 			<?php endif ?>
