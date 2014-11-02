@@ -68,7 +68,7 @@ class jpfwHtmlHelper extends jpfwHtmlHelperBase
 			$colWidth = $this->_config['col_width'];
 		} else {
 			$colWidth = array();
-			$widthValue = 100/(int)$cols;
+			$widthValue = 100 / (int)$cols;
 
 			for($i = 0; $i < $cols; $i++) {
 				$colWidth[$i] = number_format($widthValue, 2).'%';
@@ -247,11 +247,13 @@ class jpfwHtmlHelper extends jpfwHtmlHelperBase
 		</div>
 		<?php
 
+		$buffer = ob_get_clean();
+
 		if($this->_mode !== 'buffer') {
-			return ob_get_clean();
+			return $buffer();
 		}
 
-		$this->addBuffer(ob_get_clean());	
+		$this->addBuffer($buffer);	
 	}
 
 	/**
@@ -286,7 +288,13 @@ class jpfwHtmlHelper extends jpfwHtmlHelperBase
 		</div>
 		<?php
 
-		return ob_get_clean();
+		$buffer = ob_get_clean();
+
+		if($this->_mode !== 'buffer') {
+			return $buffer;
+		}
+
+		$this->addBuffer($buffer);
 	}
 
 	/**
@@ -321,11 +329,13 @@ class jpfwHtmlHelper extends jpfwHtmlHelperBase
 		</div>
 		<?php
 
+		$buffer = ob_get_clean();
+
 		if($this->_mode !== 'buffer') {
-			return ob_get_clean();
+			return $buffer;
 		}
 
-		$this->addBuffer(ob_get_clean());
+		$this->addBuffer($buffer);
 	}
 
 	/**
@@ -355,11 +365,13 @@ class jpfwHtmlHelper extends jpfwHtmlHelperBase
 			</div>
 		<?php
 
+		$buffer = ob_get_clean();
+
 		if($this->_mode !== 'buffer') {
-			return ob_get_clean();
+			return $buffer;
 		}
 
-		$this->addBuffer(ob_get_clean());
+		$this->addBuffer($buffer);
 	}
 
 	/**
@@ -388,11 +400,13 @@ class jpfwHtmlHelper extends jpfwHtmlHelperBase
 		</div>
 		<?php
 
+		$buffer = ob_get_clean();
+
 		if($this->_mode !== 'buffer') {
-			return ob_get_clean();
+			return $buffer;
 		}
 
-		$this->addBuffer(ob_get_clean());
+		$this->addBuffer($buffer);
 	}
 
 	/**
@@ -427,10 +441,12 @@ class jpfwHtmlHelper extends jpfwHtmlHelperBase
 			</div>
 		<?php
 
+		$buffer = ob_get_clean();
+
 		if($this->_mode !== 'buffer') {
-			return ob_get_clean();
+			return $buffer;
 		}
 
-		$this->addBuffer(ob_get_clean());
+		$this->addBuffer($buffer);
 	}
 }

@@ -146,11 +146,13 @@ class jpfwHtmlHelperForm extends jpfwHtmlHelperBase
 		</div>
 		<?php
 
+		$buffer = ob_get_clean();
+
 		if($this->_mode !== 'buffer') {
-			return ob_get_clean();
+			return $buffer;
 		}
 
-		$this->addBuffer(ob_get_clean());
+		$this->addBuffer($buffer);
 	}
 
 	/**
@@ -176,11 +178,13 @@ class jpfwHtmlHelperForm extends jpfwHtmlHelperBase
 		</div>
 		<?php
 
+		$buffer = ob_get_clean();
+
 		if($this->_mode !== 'buffer') {
-			return ob_get_clean();
+			return $buffer;
 		}
 
-		$this->addBuffer(ob_get_clean());
+		$this->addBuffer($buffer);
 	}
 
 	/**
@@ -198,11 +202,13 @@ class jpfwHtmlHelperForm extends jpfwHtmlHelperBase
 			</button>
 		<?php
 
+		$buffer = ob_get_clean();
+
 		if($this->_mode !== 'buffer') {
-			return ob_get_clean();
+			return $buffer;
 		}
 
-		$this->addBuffer(ob_get_clean());
+		$this->addBuffer($buffer);
 	}
 
 	/**
@@ -256,7 +262,7 @@ class jpfwHtmlHelperForm extends jpfwHtmlHelperBase
 	 */
 	public function setFormStyleHorizontal()
 	{
-		$this->_formType .= '-horizontal';
+		$this->_formType = 'form-horizontal';
 	}
 
 	/**
@@ -264,11 +270,11 @@ class jpfwHtmlHelperForm extends jpfwHtmlHelperBase
 	 */
 	public function setFormStyleInline()
 	{
-		$this->_formType .= '-inline';
+		$this->_formType = 'form-inline';
 	}
 
 	/**
-	 * Sets the column width for the form group elements as an array.
+	 * Sets the column width for the form group elements from an array.
 	 *
 	 * @param int[] $colWidth
 	 */
@@ -310,8 +316,8 @@ class jpfwHtmlHelperForm extends jpfwHtmlHelperBase
 	/**
 	 * Sets the forms submit method.
 	 *
-	 * @param string $val
-	 * @throws InvalidArgumentException
+	 * @param string $val must be "post" or "get"
+	 * @throws InvalidArgumentException if a wrong method given.
 	 */
 	public function setSubmitMethode($val)
 	{
@@ -324,8 +330,10 @@ class jpfwHtmlHelperForm extends jpfwHtmlHelperBase
 
 	/**
 	 * Activates the secure token handling of the form.
+	 *
+	 * @param bool $value activate or disable the secure token handling with true or false, default true.
 	 */
-	public function setSecureTokenActive($value)
+	public function setSecureTokenActive($value = true)
 	{
 		$this->_secureTokenActive = (bool)$value;
 	}
