@@ -97,4 +97,12 @@ abstract class jpHtmlBase
 	{
 		return $this->bufferMode;
 	}
+
+	/**
+	 * @param bool $reset [optional] default false
+	 */
+	public function flush($reset = false)
+	{
+		echo $this->getBuffer($reset);
+	}
 }

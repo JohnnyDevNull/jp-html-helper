@@ -86,12 +86,12 @@ class jpHtmlList extends jpHtmlBase
 	}
 
 	/**
-	 * @return void
+	 * @return $this
 	 */
 	public function commit()
 	{
 		$this->buffer .= '</'.$this->listType.'>';
-		echo $this->getBuffer(true);
+		return $this;
 	}
 
 	/**

@@ -128,7 +128,7 @@ class jpHtmlTable extends jpHtmlBase
 	}
 
 	/**
-	 * @return void
+	 * @return $this
 	 */
 	public function commit()
 	{
@@ -138,7 +138,7 @@ class jpHtmlTable extends jpHtmlBase
 			$this->buffer .= '</div>';
 		}
 
-		echo $this->getBuffer(true);
+		return $this;
 	}
 
 	/**

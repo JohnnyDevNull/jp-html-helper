@@ -74,11 +74,12 @@ class jpHtmlForm extends jpHtmlBase
 	}
 
 	/**
-	 * @return void
+	 * @return $this
 	 */
 	public function commit()
 	{
 		$this->buffer .= '</form>';
+		return $this;
 	}
 
 	/**
