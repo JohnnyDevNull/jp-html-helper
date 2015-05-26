@@ -1,4 +1,4 @@
-jpfwHtmlHelper-TBv3-based
+jpHtmlHelper Twitter Bootstrap Version 3 based
 ===========================
 
 Package updated to Version 1.0 - Added new nicer logic and removed some not useable stuff
