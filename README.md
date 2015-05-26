@@ -1,7 +1,9 @@
 jpfwHtmlHelper-TBv3-based
 ===========================
 
-This is a part of the closed beta jpfw (JPlace Framework) for giving some php shorthands with twitter bootstrap v3 grids and forms.
+Package updated to Version 1.0 - Added new nicer logic and removed some not useable stuff
+
+This is a part of the jpFramework (JPlace Framework) for giving some php shorthands with twitter bootstrap v3 grids and forms.
 
 See preview.png and example.php how it works.
 

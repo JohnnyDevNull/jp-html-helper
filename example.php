@@ -1,4 +1,14 @@
-<?php session_start(); ?>
+<?php
+/**
+ * Holds an example of generating a responsive grid form with secure token containing twitter bootstrap 3.
+ *
+ * @package jpFramework
+ * @author Philipp John <info@jplace.de>
+ * @version 1.0
+ * @license MIT - http://opensource.org/licenses/MIT
+ */
+
+session_start(); ?>
 <html>
 	<head>
 		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
@@ -12,23 +22,14 @@
 	</head>
 	<body>
 		<?php
-		/**
-		 * Holds an example of generating a responsive grid form with secure token containing twitter bootstrap 3.
-		 *
-		 * @package jpFramework
-		 * @author Philipp John <info@jplace.de>
-		 * @version 0.1
-		 * @license MIT - http://opensource.org/licenses/MIT
-		 */
-
 		define('_JPEXEC', 1);
 
-		require_once './libraries/html/helper/base.php';
+		require_once './libraries/html/base.php';
 		require_once './libraries/html/helper.php';
-		require_once './libraries/html/helper/form.php';
+		require_once './libraries/html/form.php';
 
-		$htmlHelper = new jpfwHtmlHelper();
-		$formHelper = new jpfwHtmlHelperForm();
+		$htmlHelper = new jpHtmlHelper();
+		$formHelper = $htmlHelper->getForm();
 
 		if(isset($_SESSION['form_token'])) {
 			$formHelper->setLastFormToken($_SESSION['form_token']);
@@ -44,64 +45,52 @@
 		/*
 		 * Init some general form settings
 		 */
-		$formHelper->setMode('buffer');
-		$formHelper->setActionUrl($_SERVER['PHP_SELF']);
-		$formHelper->setSecureTokenActive(true);
-		$formHelper->setFormStyleDefault();
-		$formHelper->setColWidth(array(5, 7));
+		$formHelper->setBufferMode(true)
+				   ->setActionUrl($_SERVER['PHP_SELF'])
+				   ->setSecureTokenActive(true)
+				   ->setFormStyleDefault()
+				   ->setColWidth(array(5, 7));
 
 		/*
 		 * add form groups to the forms output buffer
 		 */
-		$formHelper->getFormGroup (
+		$formHelper->addFormGroup (
 			'Server-Address',
 			'text',
 			'db_server',
 			'dbServer',
 			'Server-Address'
-		);
-
-		$formHelper->getFormGroup (
+		) ->addFormGroup (
 			'Server-Port',
 			'text',
 			'db_port',
 			'dbPort',
 			'Server-Port'
-		);
-
-		$formHelper->getFormGroup (
+		) ->addFormGroup (
 			'DB-Name',
 			'text',
 			'db_name',
 			'dbName',
 			'Database-Name'
-		);
-
-		$formHelper->getFormGroup (
+		) ->addFormGroup (
 			'DB-Username (read only)',
 			'text',
 			'db_user',
 			'dbUser',
 			'Username'
-		);
-
-		$formHelper->getFormGroup (
+		) ->addFormGroup (
 			'DB-Password (read only)',
 			'password',
 			'db_passwd',
 			'dbPasswd',
 			'Password'
-		);
-
-		$formHelper->getFormGroup (
+		) ->addFormGroup (
 			'DB-Username (read/write)',
 			'text',
 			'db_user_master',
 			'dbUserMaster',
 			'Username'
-		);
-
-		$formHelper->getFormGroup (
+		) ->addFormGroup (
 			'DB-Password (read/write)',
 			'password',
 			'db_passwd_master',
@@ -114,23 +103,19 @@
 		 */
 		$dbGroups = $formHelper->getBuffer(true);
 
-		$formHelper->getFormGroup (
+		$formHelper->addFormGroup (
 			'Username',
 			'text',
 			'user_name',
 			'userName',
 			'Username'
-		);
-
-		$formHelper->getFormGroup (
+		) ->addFormGroup (
 			'Password',
 			'password',
 			'user_passwd',
 			'userPasswd',
 			'Password'
-		);
-
-		$formHelper->getFormGroup (
+		) ->addFormGroup (
 			'E-mail',
 			'email',
 			'user_mail',
@@ -147,37 +132,33 @@
 		/*
 		 * now enclosure the above generated groups with grid boxes and put them together to one buffer.
 		 */
-		$cols = $htmlHelper->getGridCol('lg', 4, $htmlHelper->getPanel('Database', 'default', $dbGroups))
-			  .$htmlHelper->getGridCol('lg', 4, $htmlHelper->getPanel('User', 'default', $userGroups))
-			  .$htmlHelper->getGridCol('lg', 4, $htmlHelper->getPanel('Settings', 'default', '<p>In progress</p>'));
+		$cols = $htmlHelper->renderGridCol($htmlHelper->renderPanel('Database', $dbGroups, 'default'), 'lg', 4)
+			  .$htmlHelper->renderGridCol($htmlHelper->renderPanel('User', $userGroups, 'default'), 'lg', 4)
+			  .$htmlHelper->renderGridCol($htmlHelper->renderPanel('Settings', '<p>In progress</p>', 'default'), 'lg', 4);
 
-		$formHelper->resetMode();
-
-		/*
-		 * Set the form script, which will be outputted together with the form.
-		 */
-		$formHelper->setFormScript('<script>alert("Hello World")</script>');
+		$formHelper->setBufferMode(false);
 
 		/*
 		 * now enclosure the above generated grid boxes with the form, grid rows and the form buttons.
 		 */
-		$row = $formHelper->getForm (
-			$htmlHelper->getGridRow($cols)
-			.$htmlHelper->getGridRow (
-				$htmlHelper->getGridCol (
+		$formHelper->begin()->addBuffer (
+			$htmlHelper->renderGridRow($cols)
+			.$htmlHelper->renderGridRow (
+				$htmlHelper->renderGridCol (
+				$formHelper->addButton('Absenden', 'submit', 'sbutton')
+					.$formHelper->addButton('Zurücksetzen', 'reset', 'reset'),
 				'lg',
-				12,
-				$formHelper->getButton('Absenden', 'submit', 'sbutton').
-				$formHelper->getButton('Zurücksetzen', 'reset', 'reset')
+				12
 				)
 			)
 		);
+		$formHelper->commit();
 
 		/*
 		 * put the form into a grid container to let the grid row boxes work.
 		 */
-		$container = $htmlHelper->getGridContainer (
-			$htmlHelper->getPageHeader('Installation').$row
+		$container = $htmlHelper->renderGridContainer (
+			$htmlHelper->renderPageHeader('Installation').$formHelper->getBuffer(true)
 		);
 
 		/*
