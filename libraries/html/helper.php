@@ -2,7 +2,7 @@
 /**
  * @package jpFramework
  * @author Philipp John <info@jplace.de>
- * @version 1.0
+ * @version 1.1
  * @license MIT - http://opensource.org/licenses/MIT
  */
 
@@ -13,17 +13,41 @@ if (!defined('_JPEXEC')) {
 /**
  * @package jpFramework
  * @author Philipp John <info@jplace.de>
- * @version 1.0
+ * @version 1.1
  * @license MIT - http://opensource.org/licenses/MIT
  */
 class jpHtmlHelper extends jpHtmlBase
 {
 	/**
+	 * @return jpHtmlContainer
+	 */
+	public function getContainer()
+	{
+		return new jpHtmlContainer($this);
+	}
+
+	/**
+	 * @return jpHtmlRow
+	 */
+	public function getRow()
+	{
+		return new jpHtmlRow($this);
+	}
+
+	/**
+	 * @return jpHtmlCol
+	 */
+	public function getCol()
+	{
+		return new jpHtmlCol($this);
+	}
+
+	/**
 	 * @return jpHtmlTable
 	 */
 	public function getTable()
 	{
-		return new jpHtmlTable();
+		return new jpHtmlTable($this);
 	}
 
 	/**
@@ -31,7 +55,7 @@ class jpHtmlHelper extends jpHtmlBase
 	 */
 	public function getList()
 	{
-		return new jpHtmlList();
+		return new jpHtmlList($this);
 	}
 
 	/**
@@ -39,7 +63,7 @@ class jpHtmlHelper extends jpHtmlBase
 	 */
 	public function getNavList()
 	{
-		return new jpHtmlNavlist();
+		return new jpHtmlNavlist($this);
 	}
 
 	/**
@@ -47,130 +71,25 @@ class jpHtmlHelper extends jpHtmlBase
 	 */
 	public function getForm()
 	{
-		return new jpHtmlForm();
+		return new jpHtmlForm($this);
 	}
 
 	/**
-	 * Generates and returns a page header html box. 
+	 * Generates and returns a page header html box.
 	 *
 	 * @param string $title
 	 * @param int $size
 	 * @param string $class
-	 * @return html
+	 * @return jpHtmlHelper
 	 */
-	public function renderPageHeader($title, $size = 1, $class = '')
+	public function addPageHeader($title, $size = 1, $class = '')
 	{
-		ob_start();
-
-		?>
-		<div class="<?php echo 'page-header'.$class; ?>">
-			<h<?php echo $size; ?>>
-				<?php echo $title; ?>
-			</h<?php echo $size; ?>>
-		</div>
-		<?php
-
-		$buffer = ob_get_clean();
-
-		if(!$this->getBufferMode()) {
-			return $buffer;
-		}
-
-		$this->addBuffer($buffer);	
-	}
-
-	/**
-	 * Returns the given html enclosured with a twitter bootstrap grid container.
-	 *
-	 * @param string $content
-	 * @param bool $fluid
-	 * @param string $class
-	 * @return string
-	 */
-	public function renderGridContainer($content, $fluid = false, $class = '')
-	{
-		ob_start();
-
-		$cssClass = 'container'.$class;
-
-		if($fluid) {
-			$cssClass = 'container-fluid'.$class;
-		}
-
-		?>
-		<div class="<?php echo $cssClass; ?>">
-			<?php echo $content; ?>
-		</div>
-		<?php
-
-		$buffer = ob_get_clean();
-
-		if(!$this->getBufferMode()) {
-			return $buffer;
-		}
-
-		$this->addBuffer($buffer);
-	}
-
-	/**
-	 * Returns the given html enclosured with a twitter bootstrap grid row.
-	 *
-	 * @param string $content
-	 * @param bool $fluid
-	 * @param string $class
-	 * @return string
-	 */
-	public function renderGridRow($content, $fluid = false, $class = '')
-	{
-		ob_start();
-
-		$cssClass = 'row'.$class;
-
-		if($fluid) {
-			$cssClass = 'row-fluid'.$class;
-		}
-
-		?>
-		<div class="<?php echo $cssClass; ?>">
-			<?php echo $content; ?>
-		</div>
-		<?php
-
-		$buffer = ob_get_clean();
-
-		if(!$this->getBufferMode()) {
-			return $buffer;
-		}
-
-		$this->addBuffer($buffer);
-	}
-
-	/**
-	 * Returns the given html enclosured with a twitter bootstrap grid col by given type and width.
-	 *
-	 * @param string $content
-	 * @param string $type
-	 * @param int $width
-	 * @param string $class
-	 * @return string
-	 */
-	public function renderGridCol($content, $type = 'lg', $width = 12, $class = '')
-	{
-		ob_start();
-
-		?>
-		<div class="col-<?php echo $type.'-'.$width.$class; ?>">
-			<?php echo $content; ?>
-		</div>
-		<?php
-
-		$buffer = ob_get_clean();
-
-		if(!$this->getBufferMode()) {
-			return $buffer;
-		}
-
-		$this->addBuffer($buffer);
+		$this->addBuffer (
+			'<div class="page-header'.$class.'">'
+				.'<h'.$size.'>'.$title.'</h'.$size.'>'
+			.'</div>'
+		);
+		return $this;
 	}
 
 	/**
@@ -180,32 +99,20 @@ class jpHtmlHelper extends jpHtmlBase
 	 * @param string $content
 	 * @param string $type
 	 * @param string $class
-	 * @return html
+	 * @return jpHtmlHelper
 	 */
-	public function renderPanel($title, $content, $type = 'default', $class = '')
+	public function addPanel($title, $content, $type = 'default', $class = '')
 	{
-		ob_start();
+		$this->addBuffer(
+			'<div class="panel panel-'.trim($type).$class.'">
+				<div class="panel-heading">
+					<h3 class="panel-title">'.$title.'</h3>
+				</div>
+				<div class="panel-body">'.$content.'</div>
+			</div>'
+		);
 
-		?>
-		<div class="panel panel-<?php echo trim($type).$class; ?>">
-			<div class="panel-heading">
-				<h3 class="panel-title">
-					<?php echo $title; ?>
-				</h3>
-			</div>
-			<div class="panel-body">
-				<?php echo $content; ?>
-			</div>
-		</div>
-		<?php
-
-		$buffer = ob_get_clean();
-
-		if(!$this->getBufferMode()) {
-			return $buffer;
-		}
-
-		$this->addBuffer($buffer);
+		return $this;
 	}
 
 	/**
@@ -215,37 +122,25 @@ class jpHtmlHelper extends jpHtmlBase
 	 * @param html $content
 	 * @param bool $inset
 	 * @param string $class
-	 * @return html
+	 * @return jpHtmlHelper
 	 */
-	public function renderModule($title, $content, $inset = false, $class = '')
+	public function addModule($title, $content, $inset = false, $class = '')
 	{
-		ob_start();
-
 		$cssInset = '';
 
 		if($inset) {
-			$cssInset = 'sidebar-module-inset';
+			$cssInset = 'sidebar-module-inset ';
 		}
 
-		?>
-		<div class="sidebar-module <?php echo $cssInset.' '.$class; ?>">
-			<div class="module-heading">
-				<h3 class="module-title">
-					<?php echo $title; ?>
-				</h3>
-			</div>
-			<div class="module-body">
-				<?php echo $content; ?>
-			</div>
-		</div>
-		<?php
+		$this->addBuffer (
+			'<div class="sidebar-module '.$cssInset.$class.'">
+				<div class="module-heading">
+					<h3 class="module-title">'.$title.'</h3>
+				</div>
+				<div class="module-body">'.$content.'</div>
+			</div>'
+		);
 
-		$buffer = ob_get_clean();
-
-		if(!$this->getBufferMode()) {
-			return $buffer;
-		}
-
-		$this->addBuffer($buffer);
+		return $this;
 	}
 }

@@ -2,7 +2,7 @@
 /**
  * @package jpFramework
  * @author Philipp John <info@jplace.de>
- * @version 1.0
+ * @version 1.1
  * @license MIT - http://opensource.org/licenses/MIT
  */
 
@@ -13,7 +13,7 @@ if (!defined('_JPEXEC')) {
 /**
  * @package jpFramework
  * @author Philipp John <info@jplace.de>
- * @version 1.0
+ * @version 1.1
  * @license MIT - http://opensource.org/licenses/MIT
  */
 class jpHtmlTable extends jpHtmlBase
@@ -29,17 +29,18 @@ class jpHtmlTable extends jpHtmlBase
 	protected $header = array();
 
 	/**
-	 * @var string[]
+	 * @param bool $bool
+	 * @return jpHtmlTable
 	 */
-	protected $class = array('table');
-
-	/**
-	 * @var string
-	 */
-	protected $width = '';
+	public function setResponsive($bool)
+	{
+		$this->responsive = (bool)$bool;
+		return $this;
+	}
 
 	/**
 	 * @param string[] $header
+	 * @return jpHtmlTable
 	 */
 	public function setHeader(array $header)
 	{
@@ -49,7 +50,7 @@ class jpHtmlTable extends jpHtmlBase
 
 	/**
 	 * @param mixed[] $footer
-	 * @return $this
+	 * @return jpHtmlTable
 	 */
 	public function setFooter(array $footer)
 	{
@@ -58,32 +59,9 @@ class jpHtmlTable extends jpHtmlBase
 	}
 
 	/**
-	 * @param string $class
-	 * @return $this
-	 */
-	public function addClass($class)
-	{
-		if(!in_array($class, $this->class)) {
-			$this->class[] = $class;
-		}
-
-		return $this;
-	}
-
-	/**
-	 * @param string $width
-	 * @return $this
-	 */
-	public function setWidth($width)
-	{
-		$this->width = $width;
-		return $this;
-	}
-
-	/**
 	 * @param string $key
 	 * @param string $name
-	 * @return $this
+	 * @return jpHtmlTable
 	 */
 	public function addHeaderColumn($key, $name)
 	{
@@ -94,7 +72,7 @@ class jpHtmlTable extends jpHtmlBase
 	/**
 	 * @param mixed $key
 	 * @param mixed $value
-	 * @return $this
+	 * @return jpHtmlTable
 	 */
 	public function addFooterColumn($key, $value)
 	{
@@ -103,78 +81,84 @@ class jpHtmlTable extends jpHtmlBase
 	}
 
 	/**
-	 * @return $this
+	 * @param string $id [optinal] default null
+	 * @param string $class [optinal] default null
+	 * @return jpHtmlTable
 	 */
-	public function begin()
+	public function begin($id = null, $class = null)
 	{
-		if($this->responsive) {
-			$this->buffer .= '<div class="table-responsive">';
+		if($class === null) {
+			$class = $this->class;
 		}
 
-		$class = '';
-
-		if(!empty($this->class)) {
-			$class = 'class="'.implode(' ',$this->class).'"';
+		if($id === null) {
+			$id = $this->id;
 		}
-
-		$width = '';
-
-		if(!empty($this->width)) {
-			$width = 'width="'.$this->width.'"';
-		}
-
-		$this->buffer = '<table '.$class.' '.$width.'>';
-		return $this;
-	}
-
-	/**
-	 * @return $this
-	 */
-	public function commit()
-	{
-		$this->buffer .= '</table>';
 
 		if($this->responsive) {
-			$this->buffer .= '</div>';
+			$this->addBuffer('<div class="table-responsive">');
+		}
+
+		if(!empty($class)) {
+			$class = ' '.$class;
+		}
+
+		$this->addBuffer(
+			'<table class="table'.$class.'"'
+				. $this->getAttribute('id', $id)
+			. '>'
+		);
+		return $this;
+	}
+
+	/**
+	 * @param bool $flush [optional] default true
+	 * @param bool $reset [optional] default true
+	 * @return jpHtmlTable
+	 */
+	public function commit($flush = true, $reset = true)
+	{
+		$this->addBuffer('</table>');
+
+		if($this->responsive) {
+			$this->addBuffer('</div>');
+		}
+
+		if($flush) {
+			$this->flush($reset);
 		}
 
 		return $this;
 	}
 
 	/**
-	 * @return $this
+	 * @return jpHtmlTable
 	 */
-	public function renderHeader()
+	public function addHeader()
 	{
-		$this->buffer .= '<thead><tr><th>'
-					  .implode('</th><th>', $this->header)
-					  .'</th></tr></thead>';
+		$this->addBuffer(
+			'<thead>'
+				.'<tr>'
+					.'<th>'.implode('</th><th>', $this->header).'</th>'
+				.'</tr>'
+			.'</thead>'
+		);
 		return $this;
 	}
 
 	/**
-	 * @return $this
+	 * @return jpHtmlTable
 	 */
-	public function renderFooter()
+	public function addFooter()
 	{
-		$this->buffer .= '<tfoot></tfoot>';
+		$this->addBuffer('<tfoot></tfoot>');
 		return $this;
 	}
 
 	/**
-	 * @param bool $bool
-	 * @return $this
+	 * @return jpHtmlTable
 	 */
-	public function setResponsive($bool)
-	{
-		$this->responsive = (bool)$bool;
-		return $this;
-	}
-
-	/**
-	 * @return $this
-	 */
-	public function renderBody()
+	public function addBody()
 	{
 		$buffer = '';
 
@@ -183,7 +167,7 @@ class jpHtmlTable extends jpHtmlBase
 		}
 
 		if(!empty($buffer)) {
-			$this->buffer .= '<tbody>'.$buffer.'</tbody>';
+			$this->addBuffer('<tbody>'.$buffer.'</tbody>');
 		}
 
 		return $this;

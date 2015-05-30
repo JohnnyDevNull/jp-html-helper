@@ -2,7 +2,7 @@
 /**
  * @package jpFramework
  * @author Philipp John <info@jplace.de>
- * @version 1.0
+ * @version 1.1
  * @license MIT - http://opensource.org/licenses/MIT
  */
 
@@ -13,98 +13,37 @@ if (!defined('_JPEXEC')) {
 /**
  * @package jpFramework
  * @author Philipp John <info@jplace.de>
- * @version 1.0
+ * @version 1.1
  * @license MIT - http://opensource.org/licenses/MIT
  */
 class jpHtmlList extends jpHtmlBase
 {
 	/**
-	 * @var string[]
-	 */
-	protected $class = array('table');
-
-	/**
 	 * @var string
 	 */
-	protected $width = '';
-
-	/**
-	 * @var string
-	 */
-	protected $listType = 'ul';
+	protected $tag = 'ul';
 
 	/**
 	 * @param string $type
+	 * @return jpHtmlList
 	 */
 	public function setListType($type)
 	{
-		$this->listType = $type;
-	}
-
-	/**
-	 * @param string $class
-	 * @return $this
-	 */
-	public function addClass($class)
-	{
-		if(!in_array($class, $this->class)) {
-			$this->class[] = $class;
-		}
-
+		$this->tag = $type;
 		return $this;
 	}
 
 	/**
-	 * @param string $width
-	 * @return $this
+	 * @return jpHtmlList
 	 */
-	public function setWidth($width)
-	{
-		$this->width = $width;
-		return $this;
-	}
-
-	/**
-	 * @return $this
-	 */
-	public function begin()
-	{
-		$class = '';
-
-		if(!empty($this->class)) {
-			$class = 'class="'.implode(' ',$this->class).'"';
-		}
-
-		$width = '';
-
-		if(!empty($this->width)) {
-			$width = 'width="'.$this->width.'"';
-		}
-
-		$this->buffer = '<'.$this->listType.' '.$class.' '.$width.'>';
-		return $this;
-	}
-
-	/**
-	 * @return $this
-	 */
-	public function commit()
-	{
-		$this->buffer .= '</'.$this->listType.'>';
-		return $this;
-	}
-
-	/**
-	 * @return $this
-	 */
-	public function renderItems()
+	public function addItems()
 	{
 		foreach($this->data as $item) {
 			$buffer .= '<li>';
 
 			if(is_array($item)) {
 				$buffer .= array_shift($item);
-				$this->renderSubList($item, $buffer);
+				$this->addSubList($item, $buffer);
 			} else {
 				$buffer .= $item;
 			}
@@ -113,13 +52,14 @@ class jpHtmlList extends jpHtmlBase
 		}
 
 		$this->addBuffer($buffer);
+		return $this;
 	}
 
 	/**
 	 * @param mixed[] $data
 	 * @param string $buffer
 	 */
-	private function renderSubList($data, &$buffer)
+	private function addSubList($data, &$buffer)
 	{
 		$class = '';
 		$type = 'ul';
@@ -139,7 +79,7 @@ class jpHtmlList extends jpHtmlBase
 
 			if(is_array($value)) {
 				$buffer .= array_shift($value);
-				$this->renderSubList($type, $class, $value, $buffer);
+				$this->addSubList($type, $class, $value, $buffer);
 			} else {
 				$buffer .= $value;
 			}

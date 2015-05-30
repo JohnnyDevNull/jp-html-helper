@@ -2,7 +2,7 @@
 /**
  * @package jpFramework
  * @author Philipp John <info@jplace.de>
- * @version 1.0
+ * @version 1.1
  * @license MIT - http://opensource.org/licenses/MIT
  */
 
@@ -13,11 +13,16 @@ if (!defined('_JPEXEC')) {
 /**
  * @package jpFramework
  * @author Philipp John <info@jplace.de>
- * @version 1.0
+ * @version 1.1
  * @license MIT - http://opensource.org/licenses/MIT
  */
 class jpHtmlForm extends jpHtmlBase
 {
+	/**
+	 * @var string
+	 */
+	protected $tag = 'form';
+
 	/**
 	 * @var string
 	 */
@@ -54,142 +59,128 @@ class jpHtmlForm extends jpHtmlBase
 	protected $lastFormToken;
 
 	/**
-	 * @return $this
+	 * @param string $id [optinal] default null
+	 * @param string $class [optinal] default null
+	 * @return jpHtmlForm
 	 */
-	public function begin()
+	public function begin($id = null, $class = null)
 	{
-		ob_start();
-		?>
-		<form class="<?php echo $this->formType?>"
-			  action="<?php echo $this->actionUrl; ?>"
-			  method="<?php echo $this->method; ?>"
-			  role="form" >
-			<?php
-			if($this->secureTokenActive) {
-				$this->addToken();
-			}
+		if($class === null) {
+			$class = $this->class;
+		}
+
+		if($id === null) {
+			$id = $this->id;
+		}
+
+		$this->buffer .= '<'.$this->tag
+					  . $this->getAttribute('class', 'form'.$class)
+					  . $this->getAttribute('action', $this->actionUrl)
+					  . $this->getAttribute('method', $this->method)
+					  . $this->getAttribute('role', 'form')
+					  . '>';
+
+		if($this->secureTokenActive) {
+			$this->formToken = $this->generateToken();
+			$_SESSION['form_token'] = $this->formToken;
+			$this->buffer .= '<input type="hidden" '
+								. 'name="form_token" '
+								. 'id="form_token" '
+								. 'value="'.$this->formToken.'">';
+		}
 
 		$this->buffer = ob_get_clean();
 		return $this;
 	}
 
 	/**
-	 * @return $this
-	 */
-	public function commit()
-	{
-		$this->buffer .= '</form>';
-		return $this;
-	}
-
-	/**
 	 * @param string $label
-	 * @param string $inputType
+	 * @param string $type
 	 * @param string $inputNameID
 	 * @param string $placeholder
-	 * @return string|$this
+	 * @return jpHtmlForm
 	 */
-	public function addFormGroup($label, $inputType, $inputName, $inputID = '', $placeholder = '')
+	public function addFormGroup($label, $type, $name, $id = '', $placeholder = '')
 	{
-		ob_start();
-
 		$labelClass = '';
 
 		if($this->formType == 'form-horizontal') {
-			$colLeft = $this->colWidth[0];
-			$colRight = $this->colWidth[1];
+			$colLeft = (int)array_shift($this->colWidth);
+			$colRight = (int)array_shift($this->colWidth);
 			$labelClass = 'class="col-sm-'.$colLeft.' control-label"';
 		}
 
-		?>
-		<div class="form-group">
-			<label for="<?php echo $inputID; ?>" <?php echo $labelClass ?>>
-				<?php echo $label; ?>
-			</label>
+		$this->addBuffer (
+			'<div class="form-group">'
+				. '<label'
+					. $this->getAttribute('for', $id)
+					. $labelClass.'>'
+						. $label
+				. '</label>'
+		);
 
-			<?php if($this->formType == 'form-horizontal') : ?>
-			<div class="col-sm-<?php echo $colRight ?>">
-			<?php endif; ?>
-
-			<input type="<?php echo $inputType; ?>"
-				   class="form-control"
-				   <?php echo 'name="'.$inputName.'"'; ?>
-				   <?php echo !empty($inputID) ? 'id="'.$inputID.'"' : ''; ?>
-				   <?php echo !empty($placeholder) ? 'placeholder="'.$placeholder.'"' : ''; ?> />
-
-			<?php if($this->formType == 'form-horizontal') : ?>
-			</div>
-			<?php endif; ?>
-
-		</div>
-		<?php
-
-		$buffer = ob_get_clean();
-
-		if(!$this->getBufferMode()) {
-			return $buffer;
+		if($this->formType == 'form-horizontal') {
+			$this->addBuffer('<div class="col-sm-'.$colRight.'">');
 		}
 
-		$this->addBuffer($buffer);
+		$this->addBuffer (
+			'<input'
+				. $this->getAttribute('type', $type)
+				. $this->getAttribute('class', 'form-control')
+				. $this->getAttribute('name', $name)
+				. $this->getAttribute('id', $id)
+				. $this->getAttribute('placeholder', $placeholder)
+			.'>'
+		);
+
+		if($this->formType == 'form-horizontal') {
+			$this->addBuffer('</div>');
+		}
+
+		$this->addBuffer('</div>');
 
 		return $this;
 	}
 
 	/**
 	 * @param string $offset
-	 * @param string $inputType
-	 * @param string $inputID
+	 * @param string $type
+	 * @param string $id
 	 * @param string $placeholder
-	 * @return string|$this
+	 * @return jpHtmlForm
 	 */
-	public function addFormGroupWithOffset($offset, $inputType, $inputID = '', $placeholder = '')
+	public function addFormGroupWithOffset($offset, $type, $id = '', $placeholder = '')
 	{
-		ob_start();
-
-		?>
-		<div class="form-group">
-			<div class="<?php echo $offset; ?> col-sm-10">
-				<input type="<?php echo $inputType; ?>"
-					   class="form-control"
-					   <?php echo (!empty($inputID)) ? 'id="'.$inputID.'"' : '' ?>
-					   <?php echo (!empty($placeholder)) ? 'placeholder="'.$placeholder.'"' : '' ?> />
-			</div>
-		</div>
-		<?php
-
-		$buffer = ob_get_clean();
-
-		if(!$this->getBufferMode()) {
-			return $buffer;
-		}
-
-		$this->addBuffer($buffer);
+		$this->addBuffer (
+			'<div'.$this->getAttribute('class', 'form-group').'>'
+				. '<div'.$this->getAttribute('class', 'col-sm-offset-'.$offset.' col-sm-10').'>'
+					. '<input'
+						. $this->getAttribute('type', $type)
+						. $this->getAttribute('class', 'form-control')
+						. $this->getAttribute('id', $id)
+						. $this->getAttribute('placeholder', $placeholder)
+					. '>'
+				. '</div>'
+			. '</div>'
+		);
 
 		return $this;
 	}
 
 	/**
-	 * @return string|$this
+	 * @return jpHtmlForm
 	 */
-	public function addButton($text, $tpye, $name, $type = 'default')
+	public function addButton($text, $type, $name, $class = 'default')
 	{
-		ob_start();
-
-		?>
-			<button type="<?php echo $tpye ?>"
-					name="<?php echo $name; ?>"
-					class="btn btn-<?php echo $type; ?>">
-				<?php echo $text; ?>
-			</button>
-		<?php
-
-		$buffer = ob_get_clean();
-
-		if(!$this->getBufferMode()) {
-			return $buffer;
-		}
-
-		$this->addBuffer($buffer);
+		$this->addBuffer (
+			'<button'
+				. $this->getAttribute('type', $type)
+				. $this->getAttribute('name', $name)
+				. $this->getAttribute('class', 'btn btn-'.$class)
+				. '>'
+					. $text
+			. '</button>'
+		);
 
 		return $this;
 	}
@@ -202,16 +193,6 @@ class jpHtmlForm extends jpHtmlBase
 		$ip = $_SERVER['REMOTE_ADDR'];
 		$uniqid = uniqid(mt_rand(), true);
 		return md5($ip . $uniqid);
-	}
-
-	/**
-	 * @return string
-	 */
-	protected function addToken()
-	{
-		$this->formToken = $this->generateToken();
-		$_SESSION['form_token'] = $this->formToken;
-		echo "<input type='hidden' name='form_token' id='form_token' value='".$this->formToken."' />";
 	}
 
 	/**
@@ -230,35 +211,8 @@ class jpHtmlForm extends jpHtmlBase
 	}
 
 	/**
-	 * @return $this
-	 */
-	public function setFormStyleDefault()
-	{
-		$this->formType = 'form';
-		return $this;
-	}
-
-	/**
-	 * @return $this
-	 */
-	public function setFormStyleHorizontal()
-	{
-		$this->formType = 'form-horizontal';
-		return $this;
-	}
-
-	/**
-	 * @return $this
-	 */
-	public function setFormStyleInline()
-	{
-		$this->formType = 'form-inline';
-		return $this;
-	}
-
-	/**
 	 * @param int[] $colWidth
-	 * @return $this
+	 * @return jpHtmlForm
 	 */
 	public function setColWidth(array $colWidth)
 	{
@@ -268,7 +222,7 @@ class jpHtmlForm extends jpHtmlBase
 
 	/**
 	 * @param string $url
-	 * @return $this
+	 * @return jpHtmlForm
 	 */
 	public function setActionUrl($url)
 	{
@@ -277,7 +231,7 @@ class jpHtmlForm extends jpHtmlBase
 	}
 
 	/**
-	 * @return $this
+	 * @return jpHtmlForm
 	 */
 	public function setPostMethod()
 	{
@@ -286,7 +240,7 @@ class jpHtmlForm extends jpHtmlBase
 	}
 
 	/**
-	 * @return $this
+	 * @return jpHtmlForm
 	 */
 	public function setGetMethod()
 	{
@@ -296,7 +250,7 @@ class jpHtmlForm extends jpHtmlBase
 
 	/**
 	 * @param bool $bool
-	 * @return $this
+	 * @return jpHtmlForm
 	 */
 	public function setSecureTokenActive($bool)
 	{
@@ -306,7 +260,7 @@ class jpHtmlForm extends jpHtmlBase
 
 	/**
 	 * @param string $token
-	 * @return $this
+	 * @return jpHtmlForm
 	 */
 	public function setLastFormToken($token)
 	{
